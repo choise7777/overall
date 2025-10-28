@@ -1,0 +1,352 @@
+/* 1. Reset & Global Vibe */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f8f9fa; /* casioknow 배경색 */
+    color: #212529;
+    padding-top: 80px; /* 헤더 높이만큼 여백 */
+}
+
+/* 2. Responsive Header & Nav */
+.site-header {
+    width: 100%;
+    background-color: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    height: 60px;
+}
+.header-content {
+    max-width: 1400px; /* 전체 최대 너비에 맞춤 */
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+.site-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #212529;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.api-key-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.api-key-box input {
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px 10px;
+    min-width: 180px;
+    background: #fafbfc;
+    color: #222;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.api-key-box input:focus {
+    border-color: #0078d4;
+}
+.main-nav { position: relative; }
+.nav-list { display: flex; list-style: none; }
+.nav-list li { margin-left: 15px; }
+.nav-list a {
+    text-decoration: none;
+    color: #495057;
+    font-weight: 500;
+    padding: 8px 4px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-bottom 0.2s;
+    white-space: nowrap; /* 메뉴 줄바꿈 방지 */
+}
+.nav-list a:hover { color: #007bff; }
+.nav-list a.active {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+}
+.menu-toggle {
+    display: none; /* 데스크탑 숨김 */
+    background: none; border: none; cursor: pointer;
+    padding: 10px; z-index: 1001;
+}
+.menu-toggle span {
+    display: block; width: 25px; height: 3px;
+    background-color: #343a40; margin: 5px 0;
+    transition: all 0.3s;
+}
+
+/* 3. 3-Column Layout */
+.main-wrapper-3-column {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* (중앙) 메인 패널 */
+.center-panel {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 24px 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    order: 2; /* 3단 레이아웃에서 중앙 */
+}
+
+/* (좌/우) 사이드 패널 */
+.side-panel {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 24px;
+    height: fit-content; 
+}
+.left-panel { order: 1; }
+.right-panel { order: 3; }
+
+.side-panel h2 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.side-panel .panel-desc {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.side-panel .placeholder {
+    font-size: 0.9rem;
+    color: #adb5bd;
+    text-align: center;
+    padding: 20px 0;
+}
+.side-panel .placeholder.error {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+
+/* 4. Left Panel (Live Rates) */
+#live-rates-list {
+    list-style: none;
+}
+#live-rates-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f3f5;
+}
+#live-rates-list li:last-child {
+    border-bottom: none;
+}
+#live-rates-list li span:first-child {
+    font-weight: 600;
+}
+#live-rates-list li span:last-child {
+    font-weight: 500;
+    color: #007bff;
+}
+#loading-rates {
+    justify-content: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+.spinner-small {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 123, 255, 0.2);
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+/* 5. Right Panel (Calc Basis) */
+#calc-basis-content h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #eee;
+}
+#calc-basis-content p {
+    font-size: 0.9rem;
+    color: #343a40;
+    line-height: 1.6;
+    margin-bottom: 4px;
+    word-break: break-all;
+}
+#calc-basis-content p b {
+    color: #007bff;
+}
+
+/* 6. Center Panel (Calculator) */
+.center-panel header h1 {
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 12px;
+}
+.center-panel .description {
+    font-size: 0.95rem;
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.form-group { margin-bottom: 20px; }
+.form-group label {
+    display: block; font-size: 0.9rem;
+    font-weight: 600; margin-bottom: 8px;
+}
+.input-group { display: flex; }
+.form-group input[type="number"], .form-group select {
+    width: 100%; padding: 12px; font-size: 1.1rem;
+    border: 1px solid #ced4da; border-radius: 4px;
+    -webkit-appearance: none; -moz-appearance: none; appearance: none;
+}
+.input-group input[type="number"] {
+    flex: 2; border-top-right-radius: 0;
+    border-bottom-right-radius: 0; border-right: none;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+.input-group input[type="number"]::-webkit-outer-spin-button,
+.input-group input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none; margin: 0;
+}
+.input-group select {
+    flex: 1; border-top-left-radius: 0; border-bottom-left-radius: 0;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.9%200-5-1.8-9.2-5.4-12.7z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat; background-position: right 12px center;
+    background-size: 10px;
+}
+button#calculate-btn, 
+button#calculate-avg-btn, 
+button#calculate-tax-btn {
+    width: 100%; padding: 14px; font-size: 1.1rem;
+    font-weight: 600; color: #ffffff;
+    background-color: #007bff; border: none;
+    border-radius: 4px; cursor: pointer; transition: background-color 0.2s;
+    margin-top: 10px;
+}
+button#calculate-btn:hover,
+button#calculate-avg-btn:hover,
+button#calculate-tax-btn:hover { 
+    background-color: #0056b3; 
+}
+
+.result-section {
+    margin-top: 24px; padding: 20px;
+    background-color: #f8f9fa; border-radius: 4px;
+    min-height: 100px;
+}
+.result-path { margin-bottom: 12px; }
+.result-path strong { font-size: 0.9rem; color: #495057; }
+.result-path p { font-size: 1.2rem; font-weight: 600; margin-top: 4px; }
+hr { border: none; border-top: 1px solid #dee2e6; margin: 16px 0; }
+.final-result { text-align: center; }
+.final-result h3 { font-size: 1rem; font-weight: 500; color: #495057; }
+.final-result h2 { font-size: 1.8rem; font-weight: 700; margin-top: 4px; }
+/* (결과값 표시용) */
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+.result-item span { color: #495057; }
+.result-item strong { font-size: 1.1rem; font-weight: 600; }
+
+/* Dynamic Colors */
+.profit { color: #28a745; }
+.loss { color: #dc3545; }
+.even { color: #343a40; }
+
+.error-message { color: #dc3545; font-weight: 600; text-align: center; padding: 20px 0; }
+#loading-spinner {
+    display: flex; justify-content: center; align-items: center;
+    padding: 20px 0; font-weight: 600; color: #007bff;
+}
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(0, 123, 255, 0.2);
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite; margin-right: 10px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+footer { margin-top: 24px; border-top: 1px solid #e9ecef; padding-top: 20px; }
+.disclaimer { font-size: 0.8rem; color: #6c757d; }
+.disclaimer p { margin-bottom: 8px; line-height: 1.5; }
+.disclaimer strong { color: #495057; }
+
+
+/* 7. 반응형 미디어 쿼리 */
+@media (max-width: 1024px) {
+    /* 1024px 이하에서는 3단 -> 1단으로 변경 */
+    .main-wrapper-3-column {
+        grid-template-columns: 1fr; /* 1단으로 쌓기 */
+    }
+    .side-panel {
+        height: auto;
+    }
+    /* 모바일에서는 왼쪽 패널(환율)이 가장 위로 오도록 순서 변경 */
+    .left-panel { order: 1; }
+    .center-panel { order: 2; }
+    .right-panel { order: 3; }
+}
+
+@media (max-width: 768px) {
+    /* 헤더 메뉴 반응형 */
+    .site-header { height: 50px; }
+    body { padding-top: 60px; }
+    .menu-toggle { display: block; }
+    .nav-list {
+        display: none; flex-direction: column;
+        position: absolute; top: 50px; right: 0;
+        width: 100%; max-width: 250px;
+        background-color: #ffffff; border: 1px solid #dee2e6;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .nav-list.is-active { display: flex; }
+    .nav-list li { margin: 0; width: 100%; }
+    .nav-list a {
+        display: block; padding: 15px 20px; width: 100%;
+        border-bottom: 1px solid #f1f3f5;
+    }
+    .nav-list a.active { border-bottom: 1px solid #f1f3f5; background-color: #f8f9fa; }
+    
+    /* 햄버거 X자 변환 */
+    .menu-toggle.is-active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .menu-toggle.is-active span:nth-child(2) { opacity: 0; }
+    .menu-toggle.is-active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+    /* 본문 패딩 축소 */
+    .main-wrapper-3-column { padding: 0 10px; margin-top: 15px; gap: 15px; }
+    .center-panel { padding: 20px 15px; }
+    .side-panel { padding: 20px 15px; }
+}
