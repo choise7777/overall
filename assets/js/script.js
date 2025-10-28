@@ -20,6 +20,10 @@ function setupPageSpecificFeatures() {
     if (document.getElementById('calculate-pos-size-btn')) setupPositionSizeCalculator(); // 포지션 사이징
     if (document.getElementById('calculate-pe-btn')) setupPeRatioCalculator(); // P/E 비율
     if (document.getElementById('add-event-btn')) setupPlanner(); // 라이프 플래너
+    // (NEW) "PDF 생성" 버튼 ID 확인
+    if (document.getElementById('generate-pdf-btn')) {
+        setupPdfGenerator(); // PDF 생성기
+    }
     // (이후 PDF 생성기 추가 위치)
 }
 
@@ -621,4 +625,355 @@ function addSampleEvents() {
 }
 
 
-// --- (이후 PDF 생성기 로직 추가 위치) ---
+// --- (NEW) 로직 3-10: "PDF 생성기" 설정 (report.html) ---
+function setupPdfGenerator() {
+    const generateBtn = document.getElementById('generate-pdf-btn');
+    const statusEl = document.getElementById('pdf-status'); // HTML에 status 표시 p 태그 추가 필요
+
+    // PDF 라이브러리 로드 확인 (중요!)
+    if (typeof window.jspdf === 'undefined' || typeof window.html2canvas === 'undefined') {
+        console.error("PDF 생성 라이브러리(jsPDF 또는 html2canvas)가 로드되지 않았습니다.");
+        showError("PDF 생성 라이브러리를 로드할 수 없습니다. HTML <head>를 확인하세요.", "PDF");
+        if(generateBtn) generateBtn.disabled = true; // 버튼 비활성화
+        return;
+    }
+    const { jsPDF } = window.jspdf; // jsPDF 객체 가져오기
+
+    if (generateBtn) {
+        generateBtn.addEventListener('click', async () => {
+            const originalText = generateBtn.innerHTML;
+            try {
+                // 0. 유효성 검사 및 데이터 수집
+                const reportData = collectDataForPdf();
+                if (!reportData) return; // 데이터 수집 실패 시 중단
+
+                // 1. 버튼 상태 변경 (로딩)
+                generateBtn.innerHTML = '<div class="spinner-small" style="border-top-color: white; margin-right: 5px;"></div> 생성 중...';
+                generateBtn.disabled = true;
+                if (statusEl) statusEl.textContent = 'PDF 생성을 시작합니다... (몇 초 정도 소요)';
+
+                // 2. PDF 생성 (html2canvas 방식)
+                await generatePdfWithHtml2Canvas(reportData, jsPDF); // jsPDF 객체 전달
+
+                // 3. 성공 알림
+                showNotification('PDF가 성공적으로 생성 및 다운로드되었습니다!', 'success');
+                if (statusEl) statusEl.textContent = 'PDF 생성이 완료되었습니다.';
+
+            } catch (error) {
+                console.error('PDF 생성 오류:', error);
+                showNotification(`PDF 생성 중 오류 발생: ${error.message}`, 'error');
+                if (statusEl) statusEl.textContent = '오류가 발생했습니다. 콘솔을 확인하세요.';
+            } finally {
+                // 4. 버튼 상태 복원
+                generateBtn.innerHTML = originalText;
+                generateBtn.disabled = false;
+                // 상태 메시지 잠시 후 초기화 (선택적)
+                setTimeout(() => {
+                    if (statusEl) statusEl.textContent = '';
+                }, 5000);
+            }
+        });
+    }
+}
+
+// PDF 생성을 위한 데이터 수집 함수
+function collectDataForPdf() {
+    // 입력 필드에서 값 가져오기
+    const initialAmountEl = document.getElementById('pdf-initial-amount');
+    const monthlyInvestmentEl = document.getElementById('pdf-monthly-investment');
+    const periodEl = document.getElementById('pdf-period');
+    const interestRateEl = document.getElementById('pdf-interest-rate');
+    const lifeEventsRawEl = document.getElementById('pdf-life-events');
+
+    // 필수 요소 확인
+    if (!initialAmountEl || !monthlyInvestmentEl || !periodEl || !interestRateEl || !lifeEventsRawEl) {
+         showError('PDF 생성에 필요한 입력 필드를 찾을 수 없습니다.', 'PDF');
+         return null;
+    }
+
+    const initialAmount = parseFloat(initialAmountEl.value);
+    const monthlyInvestment = parseFloat(monthlyInvestmentEl.value);
+    const period = parseFloat(periodEl.value);
+    const interestRate = parseFloat(interestRateEl.value);
+    const lifeEventsRaw = lifeEventsRawEl.value;
+
+    // 유효성 검사
+    if (isNaN(initialAmount) || isNaN(monthlyInvestment) || isNaN(period) || isNaN(interestRate)) {
+        showError('투자 정보를 모두 숫자로 입력해주세요.', 'PDF');
+        return null;
+    }
+     if (initialAmount < 0 || monthlyInvestment < 0 || period <= 0 || interestRate < 0) {
+        showError('투자 정보에 유효한 값을 입력해주세요 (기간 > 0, 금액/수익률 >= 0).', 'PDF');
+        return null;
+    }
+
+
+    // 라이프 이벤트 파싱
+    const currentYearPdf = new Date().getFullYear(); // PDF 생성 시점의 년도
+    const parsedLifeEvents = lifeEventsRaw.split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .map((line, index) => {
+            const parts = line.split(',');
+            if (parts.length === 3) {
+                const name = parts[0].trim();
+                const year = parseInt(parts[1].trim());
+                const amount = parseFloat(parts[2].trim());
+                if (name && !isNaN(year) && !isNaN(amount) && year >= currentYearPdf && amount > 0) {
+                    return { id: Date.now() + index, name, year, amount, yearsFromNow: year - currentYearPdf };
+                }
+            }
+            console.warn("라이프 이벤트 파싱 오류 (형식 무시됨):", line); // 형식 오류 로그
+            return null;
+        })
+        .filter(event => event !== null)
+        .sort((a, b) => a.year - b.year);
+
+    // 복리 계산
+    const monthlyRate = interestRate / 100 / 12;
+    const totalMonths = period * 12;
+    const initialFV = initialAmount * Math.pow(1 + monthlyRate, totalMonths);
+    let monthlyFV = 0;
+    if (monthlyInvestment > 0 && monthlyRate > 0) monthlyFV = monthlyInvestment * (Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate;
+    else if (monthlyInvestment > 0 && monthlyRate === 0) monthlyFV = monthlyInvestment * totalMonths;
+    const finalAmount = initialFV + monthlyFV;
+    const totalInvestment = initialAmount + (monthlyInvestment * totalMonths);
+    const totalProfit = finalAmount - totalInvestment;
+
+    // 최종 데이터 객체 반환
+    return {
+        personal: {
+            reportDate: new Date().toLocaleDateString('ko-KR'),
+            currentYear: currentYearPdf
+        },
+        investment: {
+            initialAmount, monthlyInvestment, period, interestRate,
+            totalInvestment, totalProfit, finalAmount
+        },
+        lifeEvents: parsedLifeEvents
+    };
+}
+
+
+// html2canvas를 이용한 PDF 생성 함수
+async function generatePdfWithHtml2Canvas(reportData, jsPDF) { // jsPDF 객체를 인자로 받음
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    // --- 페이지 생성 ---
+    // 임시 HTML 생성 -> 캡처 -> PDF 추가 -> 임시 HTML 제거 반복
+    
+    // 페이지 1
+    const page1Element = createPdfPage1HTML(reportData);
+    document.body.appendChild(page1Element);
+    await captureAndAddPage(pdf, page1Element);
+    document.body.removeChild(page1Element);
+
+    // 페이지 2 (라이프 이벤트 있을 시)
+    if (reportData.lifeEvents && reportData.lifeEvents.length > 0) {
+        pdf.addPage();
+        const page2Element = createPdfPage2HTML(reportData);
+        document.body.appendChild(page2Element);
+        await captureAndAddPage(pdf, page2Element);
+        document.body.removeChild(page2Element);
+    }
+
+    // 페이지 3
+    pdf.addPage();
+    const page3Element = createPdfPage3HTML(reportData);
+    document.body.appendChild(page3Element);
+    await captureAndAddPage(pdf, page3Element);
+    document.body.removeChild(page3Element);
+
+    // --- PDF 저장 ---
+    // 날짜 형식 변경 (YYYYMMDD)
+    const dateStr = reportData.personal.reportDate.replace(/\./g, '').replace(/\s/g, '');
+    const fileName = `나의_금융_연대기_${dateStr}.pdf`;
+    pdf.save(fileName);
+}
+
+// HTML 요소를 캡처하여 PDF 페이지에 추가하는 함수
+async function captureAndAddPage(pdfInstance, element) {
+    try {
+        // html2canvas 옵션 조정 (품질, 스케일 등)
+        const canvas = await html2canvas(element, {
+            scale: 2, // 해상도 2배
+            useCORS: true, // 필요시
+            logging: false, // 콘솔 로그 줄이기
+            // 너비/높이 고정 (A4 비율 유지 시도)
+            // width: 794,
+            // height: 1123,
+            // windowWidth: 794,
+            // windowHeight: 1123
+        });
+        const imgData = canvas.toDataURL('image/png', 0.95); // 약간 압축하여 파일 크기 줄임
+        const imgWidth = 210; // A4 가로 (mm)
+        const pageHeight = 297; // A4 세로 (mm)
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // 첫 페이지(또는 현재 페이지)에 이미지 추가
+        pdfInstance.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        // 내용이 길어서 다음 페이지가 필요할 경우 반복 추가
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight; // 이미지의 다음 부분을 잘라낼 y 좌표
+            pdfInstance.addPage();
+            pdfInstance.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
+    } catch (error) {
+        console.error("페이지 캡처 오류:", error);
+        throw new Error("PDF 페이지 생성 중 이미지 변환 실패");
+    }
+}
+
+
+// --- PDF 페이지 HTML 생성 함수들 ---
+
+// PDF 1페이지 HTML 생성 (표지 + 복리 결과 + 차트 placeholder)
+function createPdfPage1HTML(data) {
+    const pageDiv = document.createElement('div');
+    pageDiv.classList.add('pdf-page-template'); // 기본 스타일 클래스
+
+    const finalAmount = data.investment.finalAmount;
+    const totalInvestment = data.investment.totalInvestment;
+    const totalProfit = data.investment.totalProfit;
+    const doubleTime = (data.investment.interestRate > 0) ? (72 / data.investment.interestRate).toFixed(1) : '-';
+
+    pageDiv.innerHTML = `
+        <style> /* PDF용 스타일 직접 삽입 */
+            .pdf-page-template { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; line-height: 1.5; color: #333; width: 794px; height: 1123px; background: white; padding: 40px; box-sizing: border-box; } /* 폰트 명시 */
+            h1 { font-size: 24pt; color: #4a69bd; margin-bottom: 10px; text-align: center; } h2 { font-size: 14pt; color: #666; margin-bottom: 20px; text-align: center; }
+            h3 { font-size: 13pt; color: #4a69bd; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; } p { margin-bottom: 8px; } strong { font-weight: bold; }
+            .summary-box { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 3px solid #4a69bd; } .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+            .result-highlight { background: #e7f3ff; padding: 10px; border-radius: 5px; text-align: center; margin-top: 15px; }
+            .chart-placeholder { width: 100%; height: 250px; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 9pt; text-align: center; margin-top: 15px; }
+            .footer { font-size: 8pt; color: #999; text-align: center; position: absolute; bottom: 20px; left: 40px; right: 40px; border-top: 1px solid #eee; padding-top: 10px;}
+            .profit-pdf { color: #28a745; } .loss-pdf { color: #dc3545; }
+        </style>
+        <h1>나의 금융 연대기</h1> <h2>개인 재무 분석 보고서</h2> <p style="text-align: center; font-size: 9pt; color: #888; margin-bottom: 30px;">작성일: ${data.personal.reportDate}</p>
+        <h3>📋 투자 계획 요약</h3> <div class="summary-box"> <div class="grid-2">
+        <p><strong>투자 시작:</strong> ${data.personal.currentYear}년</p> <p><strong>초기 투자액:</strong> ${formatKRW(data.investment.initialAmount)}</p>
+        <p><strong>투자 기간:</strong> ${formatNumber(data.investment.period, 0)}년</p> <p><strong>월 투자액:</strong> ${formatKRW(data.investment.monthlyInvestment)}</p>
+        <p><strong>목표 수익률:</strong> ${formatNumber(data.investment.interestRate, 1)}%</p> <p><strong>예상 최종 자산:</strong> ${formatKRW(finalAmount)}</p> </div> </div>
+        <h3>💰 복리 투자 결과 (${data.investment.period}년 후)</h3> <div class="grid-2"> <div>
+        <p><strong>총 투자원금:</strong><br>${formatKRW(totalInvestment)}</p> <p><strong>복리 수익:</strong><br><span class="profit-pdf">${formatKRW(totalProfit)}</span></p> </div>
+        <div class="result-highlight"> <strong>최종 자산</strong><br> <span style="font-size: 14pt; font-weight: bold;">${formatKRW(finalAmount)}</span> </div> </div>
+        <p style="font-size: 9pt; margin-top: 10px;">💡 <strong>72의 법칙:</strong> 연 ${data.investment.interestRate}% 수익률로 약 ${doubleTime}년 후 원금 2배 예상</p>
+        <h3>📈 자산 증가 그래프</h3> <div class="chart-placeholder"> PDF에는 그래프가 포함되지 않을 수 있습니다.<br>(웹페이지에서 확인 가능) </div>
+        <div class="footer">© ${data.personal.currentYear} 스마트 투자 계산기. 참고용 자료입니다.</div>
+    `;
+    return pageDiv;
+}
+
+// PDF 2페이지 HTML 생성 (라이프 플랜)
+function createPdfPage2HTML(data) {
+    const pageDiv = document.createElement('div');
+    pageDiv.classList.add('pdf-page-template');
+
+    const eventsHtml = data.lifeEvents.map((event, index) => {
+        const projectedAssets = calculateAssetsAtYear(data.investment.initialAmount, data.investment.monthlyInvestment, data.investment.interestRate, event.yearsFromNow);
+        const canAfford = projectedAssets >= event.amount;
+        const difference = projectedAssets - event.amount;
+        return `
+            <div class="event-box ${canAfford ? 'affordable' : 'shortage'}">
+                <h4>${index + 1}. ${escapeHtml(event.name)} (${event.year}년)</h4>
+                <p><strong>필요 금액:</strong> ${formatKRW(event.amount)}</p>
+                <p><strong>예상 자산:</strong> ${formatKRW(projectedAssets)}</p>
+                <p class="${canAfford ? 'profit-pdf' : 'loss-pdf'}">
+                    ${canAfford ? `✓ ${formatKRW(difference)} 초과` : `✗ ${formatKRW(Math.abs(difference))} 부족`}
+                </p>
+            </div>
+        `;
+    }).join('');
+
+    pageDiv.innerHTML = `
+        <style>
+             .pdf-page-template { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; line-height: 1.5; color: #333; width: 794px; height: 1123px; background: white; padding: 40px; box-sizing: border-box; }
+             h1 { font-size: 20pt; color: #4a69bd; margin-bottom: 25px; text-align: center; } h3 { font-size: 13pt; color: #4a69bd; margin-top: 25px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+             .event-box { border: 1px solid #eee; border-left-width: 3px; padding: 10px; margin-bottom: 10px; border-radius: 4px; } .event-box h4 { margin: 0 0 5px 0; font-size: 11pt; }
+             .event-box p { margin: 3px 0; font-size: 9pt; } .event-box.affordable { border-left-color: #28a745; } .event-box.shortage { border-left-color: #dc3545; }
+             .profit-pdf { color: #28a745; font-weight: bold; } .loss-pdf { color: #dc3545; font-weight: bold; }
+             .footer { font-size: 8pt; color: #999; text-align: center; position: absolute; bottom: 20px; left: 40px; right: 40px; border-top: 1px solid #eee; padding-top: 10px;}
+        </style>
+        <h1>🗓️ 인생 재무 계획</h1> <h3>등록된 이벤트 (${data.lifeEvents.length}개)</h3> <div>${eventsHtml}</div>
+        <div class="footer">© ${data.personal.currentYear} 스마트 투자 계산기. 참고용 자료입니다.</div>
+    `;
+    return pageDiv;
+}
+
+// PDF 3페이지 HTML 생성 (투자 원칙)
+function createPdfPage3HTML(data) {
+    const pageDiv = document.createElement('div');
+    pageDiv.classList.add('pdf-page-template');
+    pageDiv.innerHTML = `
+         <style>
+             .pdf-page-template { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; line-height: 1.6; color: #333; width: 794px; height: 1123px; background: white; padding: 40px; box-sizing: border-box; }
+             h1 { font-size: 20pt; color: #4a69bd; margin-bottom: 25px; text-align: center; } h3 { font-size: 13pt; color: #4a69bd; margin-top: 25px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+             .principle-box { background: #f8f9fa; padding: 12px; border-radius: 4px; margin-bottom: 10px; border-left: 3px solid #4a69bd; } .principle-box h4 { margin: 0 0 5px 0; font-size: 11pt; color: #4a69bd;} .principle-box p { margin: 0; font-size: 9pt; }
+             ul { margin: 10px 0 10px 20px; padding: 0; } li { margin-bottom: 5px; font-size: 9pt; }
+             .footer { font-size: 8pt; color: #999; text-align: center; position: absolute; bottom: 20px; left: 40px; right: 40px; border-top: 1px solid #eee; padding-top: 10px;}
+             .cta-box { background: #e7f3ff; border-left: 3px solid #007bff; padding: 15px; border-radius: 4px; margin-top: 20px; text-align: center; } .cta-box h4 { margin: 0 0 10px 0; font-size: 12pt; color: #0056b3; } .cta-box p { margin: 0; font-size: 9pt; color: #333; }
+        </style>
+        <h1>🎯 투자 성공 전략</h1> <h3>💡 성공 투자를 위한 5가지 원칙</h3>
+        <div class="principle-box"><h4>1. 장기 투자의 힘</h4><p>시간이 길수록 복리 효과가 극대화됩니다. 단기 변동성에 흔들리지 마세요.</p></div>
+        <div class="principle-box"><h4>2. 분산 투자로 리스크 관리</h4><p>여러 자산에 분산하여 위험을 줄이고 안정적인 수익을 추구하세요.</p></div>
+        <div class="principle-box"><h4>3. 정기적인 적립식 투자</h4><p>매월 일정 금액을 투자하여 시장 변동성을 평균화하세요.</p></div>
+        <div class="principle-box"><h4>4. 명확한 목표 설정</h4><p>구체적인 재무 목표를 설정하고 계획을 세우세요.</p></div>
+        <div class="principle-box"><h4>5. 지속적인 학습과 점검</h4><p>투자 지식을 쌓고, 정기적으로 포트폴리오를 점검하세요.</p></div>
+        <h3>⚠️ 리스크 관리 방안</h3> <ul><li>비상 자금 준비: 월 생활비 3-6개월분 확보</li><li>보험 가입: 예상치 못한 위험 대비</li><li>투자 비율 조절: 나이에 맞게 안전 자산 비중 조절</li><li>정기적 리밸런싱: 포트폴리오 주기적 조정</li></ul>
+        <div class="cta-box"><h4>🚀 당신의 재무 자유를 응원합니다!</h4><p>꾸준한 관심과 실천이 성공적인 투자의 핵심입니다.</p></div>
+        <div class="footer">© ${data.personal.currentYear} 스마트 투자 계산기. 참고용 자료입니다.</div>
+    `;
+    return pageDiv;
+}
+
+
+// (NEW) 알림 메시지 표시 함수
+function showNotification(message, type = 'info') {
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        // 스타일 직접 적용 (CSS 파일 로드 전에 실행될 수 있으므로)
+        container.style.cssText = `position: fixed; top: 80px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px;`;
+        document.body.appendChild(container);
+    }
+
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    // 기본 스타일 (CSS 로드 실패 대비)
+    notification.style.cssText = `padding: 15px 20px; border-radius: 8px; color: white; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-width: 250px; max-width: 350px;`;
+    if (type === 'success') notification.style.background = '#4CAF50';
+    else if (type === 'error') notification.style.background = '#f44336';
+    else notification.style.background = '#2196F3'; // info
+
+    // 애니메이션 스타일 직접 적용
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateX(100%)';
+    notification.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+    
+    container.appendChild(notification);
+    
+    // 등장 애니메이션
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 10); // 약간의 딜레이 후 애니메이션 시작
+
+    // 3초 후 자동으로 제거 (사라짐 애니메이션 포함)
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        // 애니메이션 완료 후 요소 제거
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300); // transition 시간과 일치
+    }, 3000);
+}
