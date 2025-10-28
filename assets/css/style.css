@@ -39,27 +39,6 @@ body {
     text-decoration: none;
     white-space: nowrap;
 }
-
-.api-key-box {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-.api-key-box input {
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 4px 10px;
-    min-width: 180px;
-    background: #fafbfc;
-    color: #222;
-    outline: none;
-    transition: border-color 0.2s;
-}
-.api-key-box input:focus {
-    border-color: #0078d4;
-}
 .main-nav { position: relative; }
 .nav-list { display: flex; list-style: none; }
 .nav-list li { margin-left: 15px; }
@@ -114,7 +93,7 @@ body {
     border: 1px solid #dee2e6;
     border-radius: 8px;
     padding: 24px;
-    height: fit-content; 
+    height: fit-content;
 }
 .left-panel { order: 1; }
 .right-panel { order: 3; }
@@ -229,8 +208,8 @@ body {
 .input-group input[type="number"] {
     flex: 2; border-top-right-radius: 0;
     border-bottom-right-radius: 0; border-right: none;
-    appearance: textfield;
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 .input-group input[type="number"]::-webkit-outer-spin-button,
 .input-group input[type="number"]::-webkit-inner-spin-button {
@@ -242,19 +221,16 @@ body {
     background-repeat: no-repeat; background-position: right 12px center;
     background-size: 10px;
 }
-button#calculate-btn, 
-button#calculate-avg-btn, 
-button#calculate-tax-btn {
+/* 각 계산기 버튼에 대한 스타일 */
+button[id^="calculate-"] { /* ID가 "calculate-"로 시작하는 모든 버튼 */
     width: 100%; padding: 14px; font-size: 1.1rem;
     font-weight: 600; color: #ffffff;
     background-color: #007bff; border: none;
     border-radius: 4px; cursor: pointer; transition: background-color 0.2s;
     margin-top: 10px;
 }
-button#calculate-btn:hover,
-button#calculate-avg-btn:hover,
-button#calculate-tax-btn:hover { 
-    background-color: #0056b3; 
+button[id^="calculate-"]:hover {
+    background-color: #0056b3;
 }
 
 .result-section {
@@ -269,7 +245,7 @@ hr { border: none; border-top: 1px solid #dee2e6; margin: 16px 0; }
 .final-result { text-align: center; }
 .final-result h3 { font-size: 1rem; font-weight: 500; color: #495057; }
 .final-result h2 { font-size: 1.8rem; font-weight: 700; margin-top: 4px; }
-/* (결과값 표시용) */
+/* 결과값 표시용 */
 .result-item {
     display: flex;
     justify-content: space-between;
@@ -305,16 +281,74 @@ footer { margin-top: 24px; border-top: 1px solid #e9ecef; padding-top: 20px; }
 .disclaimer strong { color: #495057; }
 
 
-/* 7. 반응형 미디어 쿼리 */
+/* --- (NEW) 8. 드롭다운 메뉴 스타일 --- */
+
+/* 드롭다운 메뉴 기본 설정 */
+.dropdown {
+    position: relative; /* 하위 메뉴의 기준점 */
+}
+
+.dropdown-toggle .arrow {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 0.7em;
+    transition: transform 0.2s ease-in-out;
+}
+
+.dropdown-menu {
+    display: none; /* 기본적으로 숨김 */
+    position: absolute;
+    top: 100%; /* 부모 메뉴 바로 아래 */
+    left: 0;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-top: none; /* 위쪽 경계선 제거 */
+    border-radius: 0 0 4px 4px; /* 아래쪽 모서리만 둥글게 */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    min-width: 160px; /* 최소 너비 */
+    list-style: none;
+    z-index: 1001; /* 다른 요소 위에 오도록 */
+    padding: 0; /* 내부 여백 제거 (<a> 태그에서 처리) */
+}
+
+.dropdown-menu li {
+    margin: 0;
+    width: 100%;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 12px 15px;
+    color: #495057;
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: none !important; /* 기본 메뉴 밑줄 제거 */
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f8f9fa; /* 호버 시 배경색 */
+    color: #007bff; /* 호버 시 글자색 */
+}
+
+/* 데스크탑: 호버 시 드롭다운 표시 */
+@media (min-width: 769px) {
+    .dropdown:hover .dropdown-menu {
+        display: block;
+    }
+    .dropdown:hover .dropdown-toggle .arrow {
+        transform: rotate(180deg); /* 호버 시 화살표 회전 */
+    }
+}
+
+
+/* --- 7. 반응형 미디어 쿼리 --- */
 @media (max-width: 1024px) {
     /* 1024px 이하에서는 3단 -> 1단으로 변경 */
     .main-wrapper-3-column {
-        grid-template-columns: 1fr; /* 1단으로 쌓기 */
+        grid-template-columns: 1fr;
     }
-    .side-panel {
-        height: auto;
-    }
-    /* 모바일에서는 왼쪽 패널(환율)이 가장 위로 오도록 순서 변경 */
+    .side-panel { height: auto; }
     .left-panel { order: 1; }
     .center-panel { order: 2; }
     .right-panel { order: 3; }
@@ -328,25 +362,448 @@ footer { margin-top: 24px; border-top: 1px solid #e9ecef; padding-top: 20px; }
     .nav-list {
         display: none; flex-direction: column;
         position: absolute; top: 50px; right: 0;
-        width: 100%; max-width: 250px;
-        background-color: #ffffff; border: 1px solid #dee2e6;
+        width: 100%; /* 너비 100%로 변경 */
+        background-color: #ffffff;
+        border-top: 1px solid #dee2e6; /* 상단 구분선 */
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     .nav-list.is-active { display: flex; }
     .nav-list li { margin: 0; width: 100%; }
     .nav-list a {
         display: block; padding: 15px 20px; width: 100%;
-        border-bottom: 1px solid #f1f3f5;
+        border-bottom: 1px solid #f1f3f5; /* 메뉴 항목 구분선 */
     }
-    .nav-list a.active { border-bottom: 1px solid #f1f3f5; background-color: #f8f9fa; }
-    
+     .nav-list li:last-child a {
+        border-bottom: none; /* 마지막 항목 구분선 제거 */
+     }
+    .nav-list a.active {
+        border-bottom: 1px solid #f1f3f5; /* 모바일 active 밑줄 제거 */
+        background-color: #f8f9fa;
+    }
+
     /* 햄버거 X자 변환 */
     .menu-toggle.is-active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
     .menu-toggle.is-active span:nth-child(2) { opacity: 0; }
     .menu-toggle.is-active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+    /* 모바일 드롭다운 스타일 */
+    .dropdown .dropdown-toggle {
+        display: flex; justify-content: space-between; align-items: center;
+        width: 100%;
+    }
+    .dropdown .dropdown-menu {
+        display: none; position: static;
+        border: none; box-shadow: none; min-width: 100%;
+        padding-left: 0; /* 들여쓰기 제거 */
+        background-color: transparent;
+        border-top: 1px solid #f1f3f5; /* 상위 메뉴와의 구분선 */
+    }
+    .dropdown.is-open .dropdown-menu { display: block; }
+    .dropdown.is-open .dropdown-toggle .arrow { transform: rotate(180deg); }
+    .dropdown-menu a {
+        padding: 10px 20px 10px 35px; /* 왼쪽 패딩으로 들여쓰기 */
+        color: #6c757d; font-size: 0.95em;
+        border-bottom: 1px solid #f1f3f5 !important;
+    }
+    .dropdown-menu li:last-child a { border-bottom: none !important; }
+    .dropdown-menu a:hover { background-color: #e9ecef; }
 
     /* 본문 패딩 축소 */
     .main-wrapper-3-column { padding: 0 10px; margin-top: 15px; gap: 15px; }
     .center-panel { padding: 20px 15px; }
     .side-panel { padding: 20px 15px; }
 }
+
+/* --- (NEW) 9. 차트 섹션 스타일 --- */
+.chart-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+.chart-section h3 {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #343a40;
+}
+.chart-container {
+    position: relative;
+    height: 300px; /* 차트 높이 */
+    width: 100%;
+}
+
+/* --- (NEW) 10. 오른쪽 패널 - 72의 법칙 스타일 --- */
+.rule-of-72 {
+    background: #f8f9ff;
+    border-left: 4px solid #007bff; /* 파란색으로 변경 */
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.rule-of-72 h4 {
+    color: #007bff;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* 아이콘과 텍스트 간격 */
+}
+.rule-of-72 p {
+    font-size: 0.9rem;
+    color: #495057;
+}
+.rule-of-72 strong {
+    color: #0056b3;
+}
+/* Font Awesome 아이콘 사용을 위한 기본 설정 (HTML <head>에 링크 추가 필요) */
+/* @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'); */
+/* --- (NEW) 11. 라이프 플래너 스타일 --- */
+
+
+/* 투자 설정 영역 */
+.investment-settings {
+    background-color: #f8f9ff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.investment-settings h4 {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: #555;
+    text-align: center;
+}
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 반응형 3단 */
+    gap: 15px;
+}
+.form-grid-3 .form-group {
+    margin-bottom: 0; /* 내부 form-group 마진 제거 */
+}
+.form-grid-3 label {
+    font-size: 0.85rem;
+}
+.form-grid-3 input {
+    font-size: 1rem;
+    padding: 10px;
+}
+
+
+/* 이벤트 추가 폼 */
+.life-events h3 {
+    color: #343a40;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.3rem;
+}
+.sample-btn { /* 샘플 추가 버튼 */
+    margin-left: auto; /* 오른쪽 끝으로 */
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    background: #e9ecef;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #495057;
+    transition: background-color 0.2s;
+}
+.sample-btn:hover {
+    background-color: #ced4da;
+}
+.sample-btn i {
+    margin-right: 3px;
+}
+
+
+.event-form {
+    display: grid;
+    /* 필드 3개 + 버튼 1개 */
+    grid-template-columns: repeat(3, 1fr) auto; 
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: end; /* 요소들을 아래쪽 정렬 */
+}
+
+.event-form input {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.event-form button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    height: 40px; /* input 높이에 맞춤 */
+}
+.event-form button:hover {
+    background-color: #0056b3;
+}
+
+
+/* 이벤트 목록 */
+.events-list {
+    margin-top: 15px;
+    max-height: 250px; /* 너무 길어지지 않게 스크롤 */
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.event-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 10px;
+    background: #ffffff;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.event-info { flex: 1; margin-right: 10px;}
+.event-name { font-weight: 600; color: #343a40; }
+.event-details { color: #6c757d; font-size: 0.85rem; margin-top: 3px;}
+
+.delete-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+    line-height: 30px; /* 아이콘 중앙 정렬 */
+    text-align: center;
+    transition: background-color 0.2s;
+}
+.delete-btn:hover { background: #c82333; }
+
+
+/* 타임라인 */
+.timeline-container h3 {
+    color: #343a40;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.3rem;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 20px; /* 라인 공간 */
+    margin-top: 15px;
+    max-height: 400px; /* 스크롤 추가 */
+    overflow-y: auto;
+    padding-right: 10px; /* 스크롤바 공간 */
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; /* 점 중앙에 맞춤 */
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: #ced4da;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    border-left-width: 4px; /* 상태 표시 */
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -19px; /* 라인 위 중앙 */
+    top: 18px;
+    width: 10px;
+    height: 10px;
+    background: #adb5bd;
+    border-radius: 50%;
+    border: 2px solid #f8f9fa; /* 배경색으로 테두리 */
+}
+
+/* 상태별 스타일 */
+.timeline-item.affordable { border-left-color: #28a745; }
+.timeline-item.shortage { border-left-color: #dc3545; }
+.timeline-item.affordable::before { background: #28a745; }
+.timeline-item.shortage::before { background: #dc3545; }
+
+.timeline-year { font-weight: 600; color: #495057; margin-bottom: 5px; }
+.timeline-event { font-weight: 500; margin-bottom: 8px; }
+.timeline-amount { font-size: 0.9rem; color: #6c757d; margin-bottom: 5px;}
+.timeline-projection { font-size: 0.9rem; font-weight: 600;}
+.timeline-projection span { font-size: 0.85rem; }
+
+
+/* 오른쪽 패널 요약 */
+#planner-summary-content .summary-item {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+#planner-summary-content .summary-item strong {
+    color: #007bff;
+}
+#planner-summary-content .recommendation {
+    margin-top: 15px;
+    padding: 10px;
+    background: #e7f3ff;
+    border-left: 3px solid #007bff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+
+/* 플래너 반응형 */
+@media (max-width: 768px) {
+    .event-form {
+        grid-template-columns: 1fr; /* 모바일에서는 세로로 쌓기 */
+    }
+    .event-form button {
+        margin-top: 5px;
+        height: auto;
+    }
+    .investment-settings .form-grid-3 {
+        grid-template-columns: 1fr; /* 모바일에서 세로 쌓기 */
+    }
+}
+
+/* 스크롤바 스타일 (선택적) */
+.events-list::-webkit-scrollbar,
+.timeline::-webkit-scrollbar {
+  width: 6px;
+}
+.events-list::-webkit-scrollbar-track,
+.timeline::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+.events-list::-webkit-scrollbar-thumb,
+.timeline::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+.events-list::-webkit-scrollbar-thumb:hover,
+.timeline::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+/* --- (NEW) 12. PDF 생성기 스타일 --- */
+.pdf-generator-section h4 {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: #555;
+    text-align: center;
+}
+.pdf-generator-section textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    resize: vertical; /* 세로 크기만 조절 가능 */
+}
+
+.pdf-actions {
+    text-align: center;
+    margin-top: 20px;
+}
+.pdf-actions h3 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+.generate-pdf-btn { /* 버튼 스타일 재정의 (초록색) */
+    background-color: #28a745;
+    border-color: #28a745;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    display: inline-flex; /* 아이콘과 텍스트 정렬 */
+    align-items: center;
+    gap: 8px;
+    width: auto; /* 자동 너비 */
+}
+.generate-pdf-btn:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+.generate-pdf-btn:disabled { /* 비활성화 상태 */
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+.generate-pdf-btn .fa-spinner { /* 로딩 아이콘 */
+    animation: spin 1s linear infinite;
+}
+
+/* 오른쪽 패널 PDF 정보 */
+#pdf-info-content ul {
+    list-style: disc;
+    margin-left: 20px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #495057;
+}
+#pdf-info-content ul li {
+    margin-bottom: 5px;
+}
+
+/* PDF 생성용 임시 HTML 템플릿 (화면에는 안 보임) */
+.pdf-page-template {
+    width: 794px; /* A4 width in pixels approx */
+    height: 1123px; /* A4 height in pixels approx */
+    background: white;
+    padding: 40px;
+    font-family: 'Noto Sans KR', Arial, sans-serif; /* 폰트 지정 중요 */
+    position: absolute;
+    left: -9999px; /* 화면 밖으로 */
+    top: 0;
+    color: #333;
+    overflow: hidden; /* 내용 넘침 방지 */
+}
+
+/* 알림 메시지 스타일 */
+#notification-container {
+    position: fixed;
+    top: 80px; /* 헤더 아래 */
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.notification {
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards;
+    min-width: 250px;
+    max-width: 350px;
+}
+.notification.success { background: #4CAF50; }
+.notification.error { background: #f44336; }
+.notification.info { background: #2196F3; }
+
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }

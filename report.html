@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 연대기 (PDF) - 스마트 투자 계산기</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    </head>
+<body>
+
+    <header class="site-header">
+        <div class="header-content">
+            <a href="index.html" class="site-title">📈 스마트 투자 계산기</a>
+            
+            <nav class="main-nav">
+                <button class="menu-toggle" id="menu-toggle-btn">
+                    <span></span><span></span><span></span>
+                </button>
+                
+                <ul class="nav-list" id="main-nav-list">
+                    <li><a href="index.html">환차익 스포터</a></li>
+                    <li><a href="avg-down.html">물타기</a></li>
+                    <li><a href="tax.html">양도소득세</a></li>
+                    <li><a href="dividend.html">배당률</a></li>
+                    <li><a href="cagr.html">CAGR</a></li>
+                    
+                    <li class="dropdown">
+                        <a href="compound.html" class="dropdown-toggle">복리 계산기 <span class="arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="planner.html">라이프 플래너</a></li>
+                            <li><a href="report.html" class="active">나의 연대기 (PDF)</a></li>
+                        </ul>
+                    </li>
+
+                    <li><a href="position-size.html">포지션 사이징</a></li>
+                    <li><a href="pe-ratio.html">P/E 비율</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-wrapper-3-column">
+
+        <aside class="side-panel left-panel">
+            <h2>실시간 주요 환율</h2>
+            <p class="panel-desc">KRW(원) 기준 실시간 환율</p>
+            <ul id="live-rates-list">
+                <li id="loading-rates">
+                    <div class="spinner-small"></div>
+                    <span>환율 정보 로딩 중...</span>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="center-panel">
+            <header>
+                <h1>📄 나의 연대기 (PDF 생성)</h1>
+            </header>
+            
+            <section class="pdf-generator-section">
+                <p class="description">입력하신 투자 계획과 라이프 플랜을 바탕으로 개인 재무 보고서 PDF를 생성합니다. (데이터는 저장되지 않습니다)</p>
+
+                <div class="investment-settings">
+                    <h4>PDF 생성용 정보 입력</h4>
+                    <p style="font-size: 0.85rem; color: #6c757d; text-align: center; margin-bottom: 15px;">
+                        (복리 계산기, 라이프 플래너에서 입력한 값을<br> 여기에 다시 입력해주세요. 데이터는 저장되지 않습니다.)
+                    </p>
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label for="pdf-initial-amount">초기 금액(원)</label>
+                            <input type="number" id="pdf-initial-amount" placeholder="복리 계산기 값">
+                        </div>
+                        <div class="form-group">
+                            <label for="pdf-monthly-investment">월 투자액(원)</label>
+                            <input type="number" id="pdf-monthly-investment" placeholder="복리 계산기 값">
+                        </div>
+                         <div class="form-group">
+                            <label for="pdf-period">투자 기간(년)</label>
+                            <input type="number" id="pdf-period" placeholder="복리 계산기 값">
+                        </div>
+                        <div class="form-group">
+                            <label for="pdf-interest-rate">연 수익률(%)</label>
+                            <input type="number" id="pdf-interest-rate" placeholder="복리 계산기 값" step="0.1">
+                        </div>
+                    </div>
+                     <div class="form-group" style="margin-top: 15px;">
+                        <label for="pdf-life-events">라이프 이벤트 (쉼표로 구분)</label>
+                        <textarea id="pdf-life-events" rows="3" placeholder="예: 결혼,2030,30000000\n주택 구매,2035,150000000"></textarea>
+                        <small style="display: block; font-size: 0.8rem; color: #6c757d; margin-top: 5px;">형식: 이벤트명,목표년도,필요금액 (각 줄에 하나씩)</small>
+                    </div>
+                </div>
+                <hr style="margin: 25px 0;">
+
+                <div class="pdf-actions">
+                    <h3><i class="fas fa-file-pdf"></i> PDF 보고서 생성</h3>
+                     <button id="generate-pdf-btn" class="generate-pdf-btn">
+                        <i class="fas fa-download"></i> PDF 다운로드
+                    </button>
+                    <p id="pdf-status" style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: #6c757d;"></p>
+                </div>
+                
+            </section>
+            
+            <footer></footer>
+        </main>
+
+        <aside class="side-panel right-panel">
+            <h2>PDF 생성 안내</h2>
+            <p class="panel-desc">보고서 생성 정보</p>
+            <div id="pdf-info-content">
+                 <p class="placeholder">위 정보를 입력하고 'PDF 다운로드' 버튼을 누르세요. 생성에는 몇 초 정도 소요될 수 있습니다.</p>
+                 <h4>포함될 내용:</h4>
+                 <ul>
+                     <li>표지</li>
+                     <li>복리 투자 결과 요약</li>
+                     <li>자산 증가 그래프</li>
+                     <li>인생 재무 계획 (입력 시)</li>
+                     <li>투자 성공 원칙</li>
+                 </ul>
+                 <p style="margin-top: 15px; font-size: 0.85rem; color: #dc3545;"><strong>주의:</strong> 한글 폰트 지원 문제로 일부 글자가 깨지거나 영어로 표시될 수 있습니다.</p>
+            </div>
+        </aside>
+
+    </div>
+    
+    <script src="assets/js/script.js"></script>
+    
+    <div id="pdf-template-page1" class="pdf-page-template"></div>
+    <div id="pdf-template-page2" class="pdf-page-template"></div>
+    <div id="pdf-template-page3" class="pdf-page-template"></div>
+    
+    <div id="notification-container"></div>
+    
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>라이프 플래너 - 스마트 투자 계산기</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-content">
+            <a href="index.html" class="site-title">📈 스마트 투자 계산기</a>
+            
+            <nav class="main-nav">
+                <button class="menu-toggle" id="menu-toggle-btn">
+                    <span></span><span></span><span></span>
+                </button>
+                
+                <ul class="nav-list" id="main-nav-list">
+                    <li><a href="index.html">환차익 스포터</a></li>
+                    <li><a href="avg-down.html">물타기</a></li>
+                    <li><a href="tax.html">양도소득세</a></li>
+                    <li><a href="dividend.html">배당률</a></li>
+                    <li><a href="cagr.html">CAGR</a></li>
+                    
+                    <li class="dropdown">
+                        <a href="compound.html" class="dropdown-toggle">복리 계산기 <span class="arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="planner.html" class="active">라이프 플래너</a></li>
+                            <li><a href="report.html">나의 연대기 (PDF)</a></li>
+                        </ul>
+                    </li>
+
+                    <li><a href="position-size.html">포지션 사이징</a></li>
+                    <li><a href="pe-ratio.html">P/E 비율</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-wrapper-3-column">
+
+        <aside class="side-panel left-panel">
+            <h2>실시간 주요 환율</h2>
+            <p class="panel-desc">KRW(원) 기준 실시간 환율</p>
+            <ul id="live-rates-list">
+                <li id="loading-rates">
+                    <div class="spinner-small"></div>
+                    <span>환율 정보 로딩 중...</span>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="center-panel">
+            <header>
+                <h1>📅 라이프 플래너 (금융 연대기)</h1>
+            </header>
+            
+            <section class="planner-section">
+                <p class="description">인생의 중요한 이벤트와 필요한 자금을 계획하고, 현재 투자 계획으로 달성 가능한지 확인해보세요.</p>
+
+                <div class="investment-settings">
+                    <h4>현재 투자 설정 (타임라인 예측용)</h4>
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label for="planner-initial-amount">초기 금액(원)</label>
+                            <input type="number" id="planner-initial-amount" value="1000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="planner-monthly-investment">월 투자액(원)</label>
+                            <input type="number" id="planner-monthly-investment" value="100000">
+                        </div>
+                        <div class="form-group">
+                            <label for="planner-interest-rate">연 수익률(%)</label>
+                            <input type="number" id="planner-interest-rate" value="7" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                <hr style="margin: 25px 0;">
+
+                <div class="life-events">
+                    <h3><i class="fas fa-calendar-alt"></i> 인생 이벤트 추가
+                        <button id="add-sample-events-btn" class="sample-btn" title="샘플 이벤트 추가">
+                            <i class="fas fa-magic"></i> 샘플
+                        </button>
+                    </h3>
+                    <div class="event-form">
+                        <input type="text" id="event-name" placeholder="이벤트 이름 (예: 결혼)">
+                        <input type="number" id="event-year" placeholder="목표 년도 (예: 2030)">
+                        <input type="number" id="event-amount" placeholder="필요 금액 (원)">
+                        <button id="add-event-btn">
+                            <i class="fas fa-plus"></i> 추가
+                        </button>
+                    </div>
+                    <div class="events-list" id="events-list">
+                        </div>
+                </div>
+                <hr style="margin: 25px 0;">
+
+                <div class="timeline-container">
+                    <h3><i class="fas fa-timeline"></i> 재무 타임라인</h3>
+                    <div class="timeline" id="timeline">
+                        </div>
+                </div>
+                
+            </section>
+            
+            <footer></footer>
+        </main>
+
+        <aside class="side-panel right-panel">
+            <h2>플래너 요약</h2>
+            <p class="panel-desc">현재 계획 요약 정보</p>
+            <div id="planner-summary-content">
+                 <p class="placeholder">이벤트를 추가하고 투자 설정을 입력하면 요약 정보가 표시됩니다.</p>
+                 </div>
+        </aside>
+
+    </div>
+    
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

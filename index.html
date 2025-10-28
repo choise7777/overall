@@ -5,29 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>환차익 스포터 - 스마트 투자 계산기</title>
     <link rel="stylesheet" href="assets/css/style.css">
-</head>
+    </head>
 <body>
 
     <header class="site-header">
         <div class="header-content">
-            <a href="index.html" class="site-title">📈 삼각 차익 계산기</a>
-            <div class="api-key-box" style="margin:10px 0;">
-                <label for="api-key-input" style="font-size:0.95rem; color:#555; margin-right:8px;">API Key:</label>
-                <input type="text" id="api-key-input" placeholder="환율 API Key 입력" style="padding:4px 10px; border-radius:4px; border:1px solid #ccc; min-width:180px;">
-            </div>
+            <a href="index.html" class="site-title">📈 스마트 투자 계산기</a>
+
             <nav class="main-nav">
                 <button class="menu-toggle" id="menu-toggle-btn">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </button>
-                
+
                 <ul class="nav-list" id="main-nav-list">
-                    <li><a href="index.html" class="active">삼각 차익 계산기</a></li>
+                    <li><a href="index.html" class="active">환차익 스포터</a></li>
                     <li><a href="avg-down.html">물타기</a></li>
                     <li><a href="tax.html">양도소득세</a></li>
                     <li><a href="dividend.html">배당률</a></li>
                     <li><a href="cagr.html">CAGR</a></li>
+
+                    <li class="dropdown">
+                        <a href="compound.html" class="dropdown-toggle">복리 계산기 <span class="arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="planner.html">라이프 플래너</a></li>
+                            <li><a href="report.html">나의 연대기 (PDF)</a></li>
+                        </ul>
+                    </li>
+
                     <li><a href="position-size.html">포지션 사이징</a></li>
                     <li><a href="pe-ratio.html">P/E 비율</a></li>
                 </ul>
@@ -52,7 +56,7 @@
             <header>
                 <h1>💡 일회용 환차익 스포터</h1>
             </header>
-            
+
             <section class="calculator-form">
                 <div class="form-group">
                     <label for="amount">기준 금액 (A)</label>
@@ -100,7 +104,7 @@
                 <div id="error-message" class="error-message" style="display: none;">
                     </div>
             </section>
-            
+
             <footer>
                 <div class="disclaimer">
                     <p><strong>💡 유의사항</strong></p>
@@ -121,7 +125,7 @@
         </aside>
 
     </div>
-    
+
     <script src="assets/js/script.js"></script>
 </body>
 </html>

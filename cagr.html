@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연평균 성장률(CAGR) 계산기 - 스마트 투자 계산기</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-content">
+            <a href="index.html" class="site-title">📈 스마트 투자 계산기</a>
+            
+            <nav class="main-nav">
+                <button class="menu-toggle" id="menu-toggle-btn">
+                    <span></span><span></span><span></span>
+                </button>
+                
+                <ul class="nav-list" id="main-nav-list">
+                    <li><a href="index.html">환차익 스포터</a></li>
+                    <li><a href="avg-down.html">물타기</a></li>
+                    <li><a href="tax.html">양도소득세</a></li>
+                    <li><a href="dividend.html">배당률</a></li>
+                    <li><a href="cagr.html" class="active">CAGR</a></li>
+                    <li><a href="position-size.html">포지션 사이징</a></li>
+                    <li><a href="pe-ratio.html">P/E 비율</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-wrapper-3-column">
+
+        <aside class="side-panel left-panel">
+            <h2>실시간 주요 환율</h2>
+            <p class="panel-desc">KRW(원) 기준 실시간 환율</p>
+            <ul id="live-rates-list">
+                <li id="loading-rates">
+                    <div class="spinner-small"></div>
+                    <span>환율 정보 로딩 중...</span>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="center-panel">
+            <header>
+                <h1>📊 연평균 성장률 (CAGR) 계산기</h1>
+            </header>
+            
+            <section class="calculator-form">
+                <p class="description">초기 투자 원금과 현재 평가 금액, 투자 기간(년)을 기준으로 연평균 복리 수익률(CAGR)을 계산합니다.</p>
+                
+                <div class="form-group">
+                    <label for="start-value">초기 투자 원금</label>
+                    <input type="number" id="start-value" placeholder="예: 5000000">
+                </div>
+                <div class="form-group">
+                    <label for="end-value">현재 평가 금액</label>
+                    <input type="number" id="end-value" placeholder="예: 8000000">
+                </div>
+                <div class="form-group">
+                    <label for="years">투자 기간 (년)</label>
+                    <input type="number" id="years" placeholder="예: 3">
+                </div>
+                
+                <button id="calculate-cagr-btn">CAGR 계산하기</button>
+            </section>
+
+            <section id="result-section" class="result-section" style="display: none;">
+                <div id="result-display" style="display: none;">
+                    </div>
+                <div id="error-message" class="error-message" style="display: none;">
+                    </div>
+            </section>
+            
+            <footer></footer>
+        </main>
+
+        <aside class="side-panel right-panel">
+            <h2>계산 근거</h2>
+            <p class="panel-desc">CAGR 계산 공식</p>
+            <div id="calc-basis-content">
+                <p class="placeholder">계산하기 버튼을 누르면 여기에 계산 근거가 표시됩니다.</p>
+            </div>
+        </aside>
+
+    </div>
+    
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>포지션 사이징 계산기 - 스마트 투자 계산기</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-content">
+            <a href="index.html" class="site-title">📈 스마트 투자 계산기</a>
+            
+            <nav class="main-nav">
+                <button class="menu-toggle" id="menu-toggle-btn">
+                    <span></span><span></span><span></span>
+                </button>
+                
+                <ul class="nav-list" id="main-nav-list">
+                    <li><a href="index.html">환차익 스포터</a></li>
+                    <li><a href="avg-down.html">물타기</a></li>
+                    <li><a href="tax.html">양도소득세</a></li>
+                    <li><a href="dividend.html">배당률</a></li>
+                    <li><a href="cagr.html">CAGR</a></li>
+                    <li><a href="position-size.html" class="active">포지션 사이징</a></li>
+                    <li><a href="pe-ratio.html">P/E 비율</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-wrapper-3-column">
+
+        <aside class="side-panel left-panel">
+            <h2>실시간 주요 환율</h2>
+            <p class="panel-desc">KRW(원) 기준 실시간 환율</p>
+            <ul id="live-rates-list">
+                <li id="loading-rates">
+                    <div class="spinner-small"></div>
+                    <span>환율 정보 로딩 중...</span>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="center-panel">
+            <header>
+                <h1>📏 포지션 사이징 계산기</h1>
+            </header>
+            
+            <section class="calculator-form">
+                <p class="description">총 자본 대비 감수할 리스크(%)와 손절 라인을 기준으로 적정 매수 수량과 총 매수 금액을 계산합니다.</p>
+                
+                <div class="form-group">
+                    <label for="total-capital">총 투자 자본</label>
+                    <input type="number" id="total-capital" placeholder="예: 10000000">
+                </div>
+                <div class="form-group">
+                    <label for="risk-percent">감수할 리스크 (%)</label>
+                    <input type="number" id="risk-percent" placeholder="예: 2" value="2">
+                </div>
+                <div class="form-group">
+                    <label for="entry-price">진입 (매수) 가격</label>
+                    <input type="number" id="entry-price" placeholder="예: 10000">
+                </div>
+                <div class="form-group">
+                    <label for="stop-loss-price">손절 (스탑로스) 가격</label>
+                    <input type="number" id="stop-loss-price" placeholder="예: 9000">
+                </div>
+                
+                <button id="calculate-pos-size-btn">매수 수량 계산하기</button>
+            </section>
+
+            <section id="result-section" class="result-section" style="display: none;">
+                <div id="result-display" style="display: none;">
+                    </div>
+                <div id="error-message" class="error-message" style="display: none;">
+                    </div>
+            </section>
+            
+            <footer></footer>
+        </main>
+
+        <aside class="side-panel right-panel">
+            <h2>계산 근거</h2>
+            <p class="panel-desc">포지션 사이징 계산 공식</p>
+            <div id="calc-basis-content">
+                <p class="placeholder">계산하기 버튼을 누르면 여기에 계산 근거가 표시됩니다.</p>
+            </div>
+        </aside>
+
+    </div>
+    
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
