@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>스마트 투자 계산기 - 최신 업데이트</title>
+    <link>https://smart-ccalculator.netlify.app/</link>
+    <description>삼각 차익 계산기 및 다양한 투자 도구의 최신 소식과 업데이트를 제공합니다.</description>
+    <language>ko</language>
+    <item>
+      <title>삼각 차익 계산기 출시</title>
+      <link>https://smart-ccalculator.netlify.app/index.html</link>
+      <description>실시간 환율 기반 삼각 차익 계산기가 새롭게 출시되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+    <item>
+      <title>물타기 계산기 추가</title>
+      <link>https://smart-ccalculator.netlify.app/avg-down.html</link>
+      <description>물타기(평균단가) 계산기가 추가되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+    <item>
+      <title>양도소득세 계산기 추가</title>
+      <link>https://smart-ccalculator.netlify.app/tax.html</link>
+      <description>양도소득세 계산기가 추가되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+    <item>
+      <title>배당률 계산기 추가</title>
+      <link>https://smart-ccalculator.netlify.app/dividend.html</link>
+      <description>배당률 계산기가 추가되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+    <item>
+      <title>CAGR 계산기 추가</title>
+      <link>https://smart-ccalculator.netlify.app/cagr.html</link>
+      <description>CAGR(연평균 성장률) 계산기가 추가되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+    <item>
+      <title>복리 계산기 추가</title>
+      <link>https://smart-ccalculator.netlify.app/compound.html</link>
+      <description>복리 계산기가 추가되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+    <item>
+      <title>포지션 사이징 계산기 추가</title>
+      <link>https://smart-ccalculator.netlify.app/position-size.html</link>
+      <description>포지션 사이징 계산기가 추가되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+    <item>
+      <title>P/E 비율 계산기 추가</title>
+      <link>https://smart-ccalculator.netlify.app/pe-ratio.html</link>
+      <description>P/E 비율 계산기가 추가되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+    <item>
+      <title>라이프 플래너 추가</title>
+      <link>https://smart-ccalculator.netlify.app/planner.html</link>
+      <description>라이프 플래너 기능이 추가되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+    <item>
+      <title>나의 연대기(PDF) 추가</title>
+      <link>https://smart-ccalculator.netlify.app/report.html</link>
+      <description>나의 연대기(PDF) 기능이 추가되었습니다.</description>
+      <pubDate>2025-10-29</pubDate>
+    </item>
+  </channel>
+</rss>
